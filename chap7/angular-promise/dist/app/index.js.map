@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["index.ts"],"names":[],"mappings":";;;;AAAA,iBAAc,eAAe,CAAC,EAAA;AAC9B,iBAAc,gCAAgC,CAAC,EAAA","sourcesContent":["export * from './environment';\nexport * from './angular-observable.component';\n"]}
