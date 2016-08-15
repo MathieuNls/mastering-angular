@@ -13,6 +13,7 @@ This repository contains the source code presented on the book. Here's are some 
 #### Chapter 7: Asynchronous Programming Using Observables
 * [Typescript Observer](http://bit.ly/mastering-angular2-chap7-part1)
 * [Angular2 Observer for JSON API](http://bit.ly/mastering-angular2-chap7-part2)
+* [Observer to Promises](http://bit.ly/mastering-angular2-chap7-part3)
 
 
 ## Disclaimer
