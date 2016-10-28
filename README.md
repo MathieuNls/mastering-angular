@@ -1,6 +1,6 @@
 # Packt Book - Mastering Angular 2
 
-This book is intended for people who haveknowledge of Angular1 and would like to migrate to Angular 2 and master it.
+This book is intended for people who have knowledge of Angular1 and would like to migrate to Angular 2 and master it.
 
 ## Mission
 
