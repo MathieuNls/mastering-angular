@@ -45,9 +45,5 @@ export class AngularObservableAppComponent {
                     },
                     error => this.error = true
                   );
-
-
-
-
   }
 }
