@@ -4,7 +4,7 @@ This book is intended for people who have knowledge of Angular1 and would like t
 
 ## Mission
 
-Building web apps with Angular 2 and migrating the existing Angular 1.x application to Angular 2. The readers will be able to master Angular 2 and streamline their application from initial structuring to full testingand deployment.
+Building web apps with Angular 2 and migrating the existing Angular 1.x application to Angular 2. The readers will be able to master Angular 2 and streamline their application from initial structuring to full testing and deployment.
 
 ## Repo Intent
 
