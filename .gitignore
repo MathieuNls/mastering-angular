@@ -27,3 +27,4 @@ testem.log
 #System Files
 .DS_Store
 Thumbs.dbchap10/node_modules/
+chap15/node_modules/
