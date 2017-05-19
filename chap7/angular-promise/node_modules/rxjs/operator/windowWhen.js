@@ -56,7 +56,7 @@ var WindowOperator = (function () {
         this.closingSelector = closingSelector;
     }
     WindowOperator.prototype.call = function (subscriber, source) {
-        return source._subscribe(new WindowSubscriber(subscriber, this.closingSelector));
+        return source.subscribe(new WindowSubscriber(subscriber, this.closingSelector));
     };
     return WindowOperator;
 }());
@@ -120,7 +120,6 @@ var WindowSubscriber = (function (_super) {
         }
         else {
             this.add(this.closingNotification = subscribeToResult_1.subscribeToResult(this, closingNotifier));
-            this.add(window);
         }
     };
     return WindowSubscriber;

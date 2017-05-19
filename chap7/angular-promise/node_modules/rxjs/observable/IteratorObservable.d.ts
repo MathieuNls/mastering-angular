@@ -1,4 +1,4 @@
-import { Scheduler } from '../Scheduler';
+import { IScheduler } from '../Scheduler';
 import { Observable } from '../Observable';
 import { TeardownLogic } from '../Subscription';
 import { Subscriber } from '../Subscriber';
@@ -8,12 +8,10 @@ import { Subscriber } from '../Subscriber';
  * @hide true
  */
 export declare class IteratorObservable<T> extends Observable<T> {
-    private iterator;
-    static create<T>(iterator: any, project?: ((x?: any, i?: number) => T) | any, thisArg?: any | Scheduler, scheduler?: Scheduler): IteratorObservable<{}>;
-    static dispatch(state: any): void;
-    private thisArg;
-    private project;
     private scheduler;
-    constructor(iterator: any, project?: ((x?: any, i?: number) => T) | any, thisArg?: any | Scheduler, scheduler?: Scheduler);
+    private iterator;
+    static create<T>(iterator: any, scheduler?: IScheduler): IteratorObservable<T>;
+    static dispatch(state: any): void;
+    constructor(iterator: any, scheduler?: IScheduler);
     protected _subscribe(subscriber: Subscriber<T>): TeardownLogic;
 }

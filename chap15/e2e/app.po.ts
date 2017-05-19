@@ -1,6 +1,6 @@
-import { browser, element, by } from 'protractor';
+import { browser, by, element } from 'protractor';
 
-export class Chap9BisPage {
+export class Chap15Page {
   navigateTo() {
     return browser.get('/');
   }

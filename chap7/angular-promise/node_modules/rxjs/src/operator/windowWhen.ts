@@ -1,15 +1,15 @@
-import {Operator} from '../Operator';
-import {Subscriber} from '../Subscriber';
-import {Observable} from '../Observable';
-import {Subject} from '../Subject';
-import {Subscription} from '../Subscription';
+import { Operator } from '../Operator';
+import { Subscriber } from '../Subscriber';
+import { Observable } from '../Observable';
+import { Subject } from '../Subject';
+import { Subscription } from '../Subscription';
 
-import {tryCatch} from '../util/tryCatch';
-import {errorObject} from '../util/errorObject';
+import { tryCatch } from '../util/tryCatch';
+import { errorObject } from '../util/errorObject';
 
-import {OuterSubscriber} from '../OuterSubscriber';
-import {InnerSubscriber} from '../InnerSubscriber';
-import {subscribeToResult} from '../util/subscribeToResult';
+import { OuterSubscriber } from '../OuterSubscriber';
+import { InnerSubscriber } from '../InnerSubscriber';
+import { subscribeToResult } from '../util/subscribeToResult';
 
 /**
  * Branch out the source Observable values as a nested Observable using a
@@ -49,12 +49,8 @@ import {subscribeToResult} from '../util/subscribeToResult';
  * @method windowWhen
  * @owner Observable
  */
-export function windowWhen<T>(closingSelector: () => Observable<any>): Observable<Observable<T>> {
+export function windowWhen<T>(this: Observable<T>, closingSelector: () => Observable<any>): Observable<Observable<T>> {
   return this.lift(new WindowOperator<T>(closingSelector));
-}
-
-export interface WindowWhenSignature<T> {
-  (closingSelector: () => Observable<any>): Observable<Observable<T>>;
 }
 
 class WindowOperator<T> implements Operator<T, Observable<T>> {
@@ -62,7 +58,7 @@ class WindowOperator<T> implements Operator<T, Observable<T>> {
   }
 
   call(subscriber: Subscriber<Observable<T>>, source: any): any {
-    return source._subscribe(new WindowSubscriber(subscriber, this.closingSelector));
+    return source.subscribe(new WindowSubscriber(subscriber, this.closingSelector));
   }
 }
 
@@ -138,7 +134,6 @@ class WindowSubscriber<T> extends OuterSubscriber<T, any> {
       this.window.error(err);
     } else {
       this.add(this.closingNotification = subscribeToResult(this, closingNotifier));
-      this.add(window);
     }
   }
 }

@@ -1,11 +1,11 @@
-import {Operator} from '../Operator';
-import {Subscriber} from '../Subscriber';
-import {Observable} from '../Observable';
-import {Subject} from '../Subject';
+import { Operator } from '../Operator';
+import { Subscriber } from '../Subscriber';
+import { Observable } from '../Observable';
+import { Subject } from '../Subject';
 
-import {OuterSubscriber} from '../OuterSubscriber';
-import {InnerSubscriber} from '../InnerSubscriber';
-import {subscribeToResult} from '../util/subscribeToResult';
+import { OuterSubscriber } from '../OuterSubscriber';
+import { InnerSubscriber } from '../InnerSubscriber';
+import { subscribeToResult } from '../util/subscribeToResult';
 
 /**
  * Branch out the source Observable values as a nested Observable whenever
@@ -43,12 +43,8 @@ import {subscribeToResult} from '../util/subscribeToResult';
  * @method window
  * @owner Observable
  */
-export function window<T>(windowBoundaries: Observable<any>): Observable<Observable<T>> {
+export function window<T>(this: Observable<T>, windowBoundaries: Observable<any>): Observable<Observable<T>> {
   return this.lift(new WindowOperator<T>(windowBoundaries));
-}
-
-export interface WindowSignature<T> {
-  (windowBoundaries: Observable<any>): Observable<Observable<T>>;
 }
 
 class WindowOperator<T> implements Operator<T, Observable<T>> {
@@ -57,7 +53,12 @@ class WindowOperator<T> implements Operator<T, Observable<T>> {
   }
 
   call(subscriber: Subscriber<Observable<T>>, source: any): any {
-    return source._subscribe(new WindowSubscriber(subscriber, this.windowBoundaries));
+    const windowSubscriber = new WindowSubscriber(subscriber);
+    const sourceSubscription = source.subscribe(windowSubscriber);
+    if (!sourceSubscription.closed) {
+      windowSubscriber.add(subscribeToResult(windowSubscriber, this.windowBoundaries));
+    }
+    return sourceSubscription;
   }
 }
 
@@ -67,13 +68,12 @@ class WindowOperator<T> implements Operator<T, Observable<T>> {
  * @extends {Ignored}
  */
 class WindowSubscriber<T> extends OuterSubscriber<T, any> {
-  private window: Subject<T>;
 
-  constructor(protected destination: Subscriber<Observable<T>>,
-              private windowBoundaries: Observable<any>) {
+  private window: Subject<T> = new Subject<T>();
+
+  constructor(destination: Subscriber<Observable<T>>) {
     super(destination);
-    this.add(subscribeToResult(this, windowBoundaries));
-    this.openWindow();
+    destination.next(this.window);
   }
 
   notifyNext(outerValue: T, innerValue: any,
@@ -104,6 +104,10 @@ class WindowSubscriber<T> extends OuterSubscriber<T, any> {
     this.destination.complete();
   }
 
+  protected _unsubscribe() {
+    this.window = null;
+  }
+
   private openWindow(): void  {
     const prevWindow = this.window;
     if (prevWindow) {
@@ -111,7 +115,6 @@ class WindowSubscriber<T> extends OuterSubscriber<T, any> {
     }
     const destination = this.destination;
     const newWindow = this.window = new Subject<T>();
-    destination.add(newWindow);
     destination.next(newWindow);
   }
 }

@@ -43,67 +43,10 @@
 
 const by = require('./by');
 const By = require('./by').By;
-const error = require('../error');
-
-
-/**
- * Defines a condition for use with WebDriver's
- * {@linkplain ./webdriver.WebDriver#wait wait command}.
- *
- * @template OUT
- */
-class Condition {
-  /**
-   * @param {string} message A descriptive error message. Should complete the
-   *     sentence "Waiting [...]"
-   * @param {function(!./webdriver.WebDriver): OUT} fn The condition function to
-   *     evaluate on each iteration of the wait loop.
-   */
-  constructor(message, fn) {
-    /** @private {string} */
-    this.description_ = 'Waiting ' + message;
-
-    /** @type {function(!./webdriver.WebDriver): OUT} */
-    this.fn = fn;
-  }
-
-  /** @return {string} A description of this condition. */
-  description() {
-    return this.description_;
-  }
-}
-
-/**
- * @typedef {!(./webdriver.WebElement|
- *             ./promise.Promise<!./webdriver.WebElement>)}
- */
-var ElementConditionResult;
-
-
-/**
- * Defines a condition that will result in a
- * {@link ./webdriver.WebElement WebElement}.
- *
- * @extends {Condition<ElementConditionResult>}
- */
-class WebElementCondition extends Condition {
-  /**
-   * @param {string} message A descriptive error message. Should complete the
-   *     sentence "Waiting [...]"
-   * @param {function(!./webdriver.WebDriver): ElementConditionResult} fn The
-   *     condition function to evaluate on each iteration of the wait loop.
-   */
-  constructor(message, fn) {
-    super(message, fn);
-  }
-}
-
-
-// PUBLIC API
-
-
-exports.Condition = Condition;
-exports.WebElementCondition = WebElementCondition;
+const error = require('./error');
+const webdriver = require('./webdriver'),
+    Condition = webdriver.Condition,
+    WebElementCondition = webdriver.WebElementCondition;
 
 
 /**
@@ -127,9 +70,6 @@ exports.WebElementCondition = WebElementCondition;
  * @return {!Condition<boolean>} A new condition.
  */
 exports.ableToSwitchToFrame = function ableToSwitchToFrame(frame) {
-  // Not at top-level to avoid circular dependency.
-  const webdriver = require('./webdriver');
-
   var condition;
   if (typeof frame === 'number' || frame instanceof webdriver.WebElement) {
     condition = attemptToSwitchFrames;
@@ -166,8 +106,14 @@ exports.ableToSwitchToFrame = function ableToSwitchToFrame(frame) {
  */
 exports.alertIsPresent = function alertIsPresent() {
   return new Condition('for alert to be present', function(driver) {
-    return driver.switchTo().alert().thenCatch(function(e) {
-      if (!(e instanceof error.NoSuchAlertError)) {
+    return driver.switchTo().alert().catch(function(e) {
+      if (!(e instanceof error.NoSuchAlertError
+        // XXX: Workaround for GeckoDriver error `TypeError: can't convert null
+        // to object`. For more details, see
+        // https://github.com/SeleniumHQ/selenium/pull/2137
+        || (e instanceof error.WebDriverError
+          && e.message === `can't convert null to object`)
+        )) {
         throw e;
       }
     });
@@ -223,6 +169,59 @@ exports.titleMatches = function titleMatches(regex) {
   return new Condition('for title to match ' + regex, function(driver) {
     return driver.getTitle().then(function(title) {
       return regex.test(title);
+    });
+  });
+};
+
+
+/**
+ * Creates a condition that will wait for the current page's url to match the
+ * given value.
+ *
+ * @param {string} url The expected page url.
+ * @return {!Condition<boolean>} The new condition.
+ */
+exports.urlIs = function urlIs(url) {
+  return new Condition(
+      'for URL to be ' + JSON.stringify(url),
+      function(driver) {
+        return driver.getCurrentUrl().then(function(u) {
+          return u === url;
+        });
+      });
+};
+
+
+/**
+ * Creates a condition that will wait for the current page's url to contain
+ * the given substring.
+ *
+ * @param {string} substrUrl The substring that should be present in the current
+ *     URL.
+ * @return {!Condition<boolean>} The new condition.
+ */
+exports.urlContains = function urlContains(substrUrl) {
+  return new Condition(
+      'for URL to contain ' + JSON.stringify(substrUrl),
+      function(driver) {
+        return driver.getCurrentUrl().then(function(url) {
+          return url.indexOf(substrUrl) !== -1;
+        });
+      });
+};
+
+
+/**
+ * Creates a condition that will wait for the current page's url to match the
+ * given regular expression.
+ *
+ * @param {!RegExp} regex The regular expression to test against.
+ * @return {!Condition<boolean>} The new condition.
+ */
+exports.urlMatches = function urlMatches(regex) {
+  return new Condition('for URL to match ' + regex, function(driver) {
+    return driver.getCurrentUrl().then(function(url) {
+      return regex.test(url);
     });
   });
 };

@@ -7,7 +7,7 @@ import 'rxjs/Rx';
 @Injectable()
 export class IMDBAPIService {
 
-  private moviesUrl:string = "app/marvel-cinematic-universe.json";
+  private moviesUrl:string = "assets/marvel-cinematic-universe.json";
 
   constructor(private http: Http) { }
 

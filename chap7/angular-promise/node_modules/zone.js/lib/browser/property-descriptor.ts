@@ -1,10 +1,21 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {isBrowser, isMix, isNode, patchClass, patchOnProperties, zoneSymbol} from '../common/utils';
+
 import * as webSocketPatch from './websocket';
-import {zoneSymbol, patchOnProperties, patchClass, isBrowser, isNode} from '../common/utils';
 
-const eventNames = 'copy cut paste abort blur focus canplay canplaythrough change click contextmenu dblclick drag dragend dragenter dragleave dragover dragstart drop durationchange emptied ended input invalid keydown keypress keyup load loadeddata loadedmetadata loadstart message mousedown mouseenter mouseleave mousemove mouseout mouseover mouseup pause play playing progress ratechange reset scroll seeked seeking select show stalled submit suspend timeupdate volumechange waiting mozfullscreenchange mozfullscreenerror mozpointerlockchange mozpointerlockerror error webglcontextrestored webglcontextlost webglcontextcreationerror'.split(' ');
+const eventNames =
+    'copy cut paste abort blur focus canplay canplaythrough change click contextmenu dblclick drag dragend dragenter dragleave dragover dragstart drop durationchange emptied ended input invalid keydown keypress keyup load loadeddata loadedmetadata loadstart message mousedown mouseenter mouseleave mousemove mouseout mouseover mouseup pause play playing progress ratechange reset scroll seeked seeking select show stalled submit suspend timeupdate volumechange waiting mozfullscreenchange mozfullscreenerror mozpointerlockchange mozpointerlockerror error webglcontextrestored webglcontextlost webglcontextcreationerror'
+        .split(' ');
 
-export function propertyDescriptorPatch(_global) {
-  if (isNode){
+export function propertyDescriptorPatch(_global: any) {
+  if (isNode && !isMix) {
     return;
   }
 
@@ -12,6 +23,11 @@ export function propertyDescriptorPatch(_global) {
   if (canPatchViaPropertyDescriptor()) {
     // for browsers that we can patch the descriptor:  Chrome & Firefox
     if (isBrowser) {
+      patchOnProperties(window, eventNames.concat(['resize']));
+      patchOnProperties(Document.prototype, eventNames);
+      if (typeof(<any>window)['SVGElement'] !== 'undefined') {
+        patchOnProperties((<any>window)['SVGElement'].prototype, eventNames);
+      }
       patchOnProperties(HTMLElement.prototype, eventNames);
     }
     patchOnProperties(XMLHttpRequest.prototype, null);
@@ -37,23 +53,53 @@ export function propertyDescriptorPatch(_global) {
 }
 
 function canPatchViaPropertyDescriptor() {
-  if (isBrowser && !Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'onclick')
-      && typeof Element !== 'undefined') {
+  if ((isBrowser || isMix) && !Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'onclick') &&
+      typeof Element !== 'undefined') {
     // WebKit https://bugs.webkit.org/show_bug.cgi?id=134364
     // IDL interface attributes are not configurable
     const desc = Object.getOwnPropertyDescriptor(Element.prototype, 'onclick');
     if (desc && !desc.configurable) return false;
   }
 
-  Object.defineProperty(XMLHttpRequest.prototype, 'onreadystatechange', {
-    get: function () {
-      return true;
-    }
-  });
-  const req = new XMLHttpRequest();
-  const result = !!req.onreadystatechange;
-  Object.defineProperty(XMLHttpRequest.prototype, 'onreadystatechange', {});
-  return result;
+  const xhrDesc = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, 'onreadystatechange');
+
+  // add enumerable and configurable here because in opera
+  // by default XMLHttpRequest.prototype.onreadystatechange is undefined
+  // without adding enumerable and configurable will cause onreadystatechange
+  // non-configurable
+  // and if XMLHttpRequest.prototype.onreadystatechange is undefined,
+  // we should set a real desc instead a fake one
+  if (xhrDesc) {
+    Object.defineProperty(XMLHttpRequest.prototype, 'onreadystatechange', {
+      enumerable: true,
+      configurable: true,
+      get: function() {
+        return true;
+      }
+    });
+    const req = new XMLHttpRequest();
+    const result = !!req.onreadystatechange;
+    // restore original desc
+    Object.defineProperty(XMLHttpRequest.prototype, 'onreadystatechange', xhrDesc || {});
+    return result;
+  } else {
+    Object.defineProperty(XMLHttpRequest.prototype, 'onreadystatechange', {
+      enumerable: true,
+      configurable: true,
+      get: function() {
+        return this[zoneSymbol('fakeonreadystatechange')];
+      },
+      set: function(value) {
+        this[zoneSymbol('fakeonreadystatechange')] = value;
+      }
+    });
+    const req = new XMLHttpRequest();
+    const detectFunc = () => {};
+    req.onreadystatechange = detectFunc;
+    const result = (req as any)[zoneSymbol('fakeonreadystatechange')] === detectFunc;
+    req.onreadystatechange = null;
+    return result;
+  }
 };
 
 const unboundKey = zoneSymbol('unbound');
@@ -62,11 +108,11 @@ const unboundKey = zoneSymbol('unbound');
 // for `onwhatever` properties and replace them with zone-bound functions
 // - Chrome (for now)
 function patchViaCapturingAllTheEvents() {
-  for(let i = 0; i < eventNames.length; i++) {
+  for (let i = 0; i < eventNames.length; i++) {
     const property = eventNames[i];
     const onproperty = 'on' + property;
-    document.addEventListener(property, function (event) {
-      let elt = <Node>event.target, bound, source;
+    self.addEventListener(property, function(event) {
+      let elt: any = <Node>event.target, bound, source;
       if (elt) {
         source = elt.constructor['name'] + '.' + onproperty;
       } else {
@@ -81,5 +127,5 @@ function patchViaCapturingAllTheEvents() {
         elt = elt.parentElement;
       }
     }, true);
-  };
-};
+  }
+}

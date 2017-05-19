@@ -1,9 +1,11 @@
+import { browser, by, element } from 'protractor';
+
 export class AngularObservablePage {
   navigateTo() {
     return browser.get('/');
   }
 
   getParagraphText() {
-    return element(by.css('angular-observable-app h1')).getText();
+    return element(by.css('app-root h1')).getText();
   }
 }

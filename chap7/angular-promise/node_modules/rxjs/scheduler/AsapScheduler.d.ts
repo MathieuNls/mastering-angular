@@ -1,6 +1,5 @@
-import { Action } from './Action';
-import { Subscription } from '../Subscription';
-import { QueueScheduler } from './QueueScheduler';
-export declare class AsapScheduler extends QueueScheduler {
-    scheduleNow<T>(work: (x?: T) => Subscription, state?: T): Action<T>;
+import { AsyncAction } from './AsyncAction';
+import { AsyncScheduler } from './AsyncScheduler';
+export declare class AsapScheduler extends AsyncScheduler {
+    flush(action?: AsyncAction<any>): void;
 }

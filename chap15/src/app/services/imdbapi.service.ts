@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http, Response, Request, RequestMethod }  from '@angular/http';
+import { Http }  from '@angular/http';
 import { Movie, MovieFields } from '../models/movie';
 import { Observable } from 'rxjs/Rx';
 import 'rxjs/Rx';
@@ -7,9 +7,9 @@ import 'rxjs/Rx';
 @Injectable()
 export class IMDBAPIService {
 
-  private moviesUrl:string = "app/marvel-cinematic-universe.json";
+  private moviesUrl:string = "assets/marvel-cinematic-universe.json";
 
-  constructor(private http: Http) {}
+  constructor(private http: Http) { }
 
   /**
    * Return a Promise to a Movie matching id
@@ -24,7 +24,7 @@ export class IMDBAPIService {
          * Transforms the result of the http get, which is observable
          * into one observable by item.
          */
-        .flatMap(res => {console.log("res", res); return res.json().movies})
+        .flatMap(res => res.json().movies)
         /**
          * Filters movies by their movie_id
          */
@@ -115,12 +115,6 @@ export class IMDBAPIService {
       });
   }
 
-  /**
-   * Fetch All Movies By Field
-   * @param  {MovieFields}      field [description]
-   * @param  {any}              value [description]
-   * @return {Promise<Movie[]>}       [description]
-   */
   public fetchByField(field:MovieFields, value:any):Promise<Movie[]>{
       console.log('fetchByField', field, value);
 
@@ -167,5 +161,6 @@ export class IMDBAPIService {
             }
             return movies;
         });
+
   }
 }

@@ -2,7 +2,6 @@
   {{title}}
 </h1>
 
-
 {{movie.movie_id}}
 <form [formGroup]="movieForm">
 
@@ -59,8 +58,6 @@
         <button (click)="submit()" type="submit">SUBMIT</button>
 </form>
 
-
 <ul>
     <li *ngFor="let movie of movies">{{movie}}</li> 
 </ul>
-

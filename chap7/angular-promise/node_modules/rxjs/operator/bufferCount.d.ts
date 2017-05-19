@@ -28,6 +28,7 @@ import { Observable } from '../Observable';
  * @see {@link bufferTime}
  * @see {@link bufferToggle}
  * @see {@link bufferWhen}
+ * @see {@link pairwise}
  * @see {@link windowCount}
  *
  * @param {number} bufferSize The maximum size of the buffer emitted.
@@ -39,7 +40,4 @@ import { Observable } from '../Observable';
  * @method bufferCount
  * @owner Observable
  */
-export declare function bufferCount<T>(bufferSize: number, startBufferEvery?: number): Observable<T[]>;
-export interface BufferCountSignature<T> {
-    (bufferSize: number, startBufferEvery?: number): Observable<T[]>;
-}
+export declare function bufferCount<T>(this: Observable<T>, bufferSize: number, startBufferEvery?: number): Observable<T[]>;

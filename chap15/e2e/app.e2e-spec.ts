@@ -1,10 +1,10 @@
-import { Chap9BisPage } from './app.po';
+import { Chap15Page } from './app.po';
 
-describe('chap9-bis App', function() {
-  let page: Chap9BisPage;
+describe('chap15 App', () => {
+  let page: Chap15Page;
 
   beforeEach(() => {
-    page = new Chap9BisPage();
+    page = new Chap15Page();
   });
 
   it('should display message saying app works', () => {

@@ -1,11 +1,11 @@
-import {isNumeric} from '../util/isNumeric';
-import {Scheduler} from '../Scheduler';
-import {Observable} from '../Observable';
-import {async} from '../scheduler/async';
-import {isScheduler} from '../util/isScheduler';
-import {isDate} from '../util/isDate';
-import {TeardownLogic} from '../Subscription';
-import {Subscriber} from '../Subscriber';
+import { isNumeric } from '../util/isNumeric';
+import { IScheduler } from '../Scheduler';
+import { Observable } from '../Observable';
+import { async } from '../scheduler/async';
+import { isScheduler } from '../util/isScheduler';
+import { isDate } from '../util/isDate';
+import { TeardownLogic } from '../Subscription';
+import { Subscriber } from '../Subscriber';
 
 /**
  * We need this JSDoc comment for affecting ESDoc.
@@ -27,8 +27,8 @@ export class TimerObservable extends Observable<number> {
    * integers, with a constant interval of time, `period` of your choosing
    * between those emissions. The first emission happens after the specified
    * `initialDelay`. The initial delay may be a {@link Date}. By default, this
-   * operator uses the `async` Scheduler to provide a notion of time, but you
-   * may pass any Scheduler to it. If `period` is not specified, the output
+   * operator uses the `async` IScheduler to provide a notion of time, but you
+   * may pass any IScheduler to it. If `period` is not specified, the output
    * Observable emits only one value, `0`. Otherwise, it emits an infinite
    * sequence.
    *
@@ -47,7 +47,7 @@ export class TimerObservable extends Observable<number> {
    * emitting the first value of `0`.
    * @param {number} [period] The period of time between emissions of the
    * subsequent numbers.
-   * @param {Scheduler} [scheduler=async] The Scheduler to use for scheduling
+   * @param {Scheduler} [scheduler=async] The IScheduler to use for scheduling
    * the emission of values, and providing a notion of "time".
    * @return {Observable} An Observable that emits a `0` after the
    * `initialDelay` and ever increasing numbers after each `period` of time
@@ -57,8 +57,8 @@ export class TimerObservable extends Observable<number> {
    * @owner Observable
    */
   static create(initialDelay: number | Date = 0,
-                period?: number | Scheduler,
-                scheduler?: Scheduler): Observable<number> {
+                period?: number | IScheduler,
+                scheduler?: IScheduler): Observable<number> {
     return new TimerObservable(initialDelay, period, scheduler);
   }
 
@@ -69,7 +69,7 @@ export class TimerObservable extends Observable<number> {
 
     subscriber.next(index);
 
-    if (subscriber.isUnsubscribed) {
+    if (subscriber.closed) {
       return;
     } else if (period === -1) {
       return subscriber.complete();
@@ -81,17 +81,17 @@ export class TimerObservable extends Observable<number> {
 
   private period: number = -1;
   private dueTime: number = 0;
-  private scheduler: Scheduler;
+  private scheduler: IScheduler;
 
   constructor(dueTime: number | Date = 0,
-              period?: number | Scheduler,
-              scheduler?: Scheduler) {
+              period?: number | IScheduler,
+              scheduler?: IScheduler) {
     super();
 
     if (isNumeric(period)) {
       this.period = Number(period) < 1 && 1 || Number(period);
     } else if (isScheduler(period)) {
-      scheduler = <Scheduler> period;
+      scheduler = <IScheduler> period;
     }
 
     if (!isScheduler(scheduler)) {

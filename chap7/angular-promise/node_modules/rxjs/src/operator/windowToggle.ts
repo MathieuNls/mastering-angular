@@ -1,15 +1,15 @@
-import {Operator} from '../Operator';
-import {Subscriber} from '../Subscriber';
-import {Observable} from '../Observable';
-import {Subject} from '../Subject';
-import {Subscription} from '../Subscription';
+import { Operator } from '../Operator';
+import { Subscriber } from '../Subscriber';
+import { Observable } from '../Observable';
+import { Subject } from '../Subject';
+import { Subscription } from '../Subscription';
 
-import {tryCatch} from '../util/tryCatch';
-import {errorObject} from '../util/errorObject';
+import { tryCatch } from '../util/tryCatch';
+import { errorObject } from '../util/errorObject';
 
-import {OuterSubscriber} from '../OuterSubscriber';
-import {InnerSubscriber} from '../InnerSubscriber';
-import {subscribeToResult} from '../util/subscribeToResult';
+import { OuterSubscriber } from '../OuterSubscriber';
+import { InnerSubscriber } from '../InnerSubscriber';
+import { subscribeToResult } from '../util/subscribeToResult';
 
 /**
  * Branch out the source Observable values as a nested Observable starting from
@@ -52,13 +52,9 @@ import {subscribeToResult} from '../util/subscribeToResult';
  * @method windowToggle
  * @owner Observable
  */
-export function windowToggle<T, O>(openings: Observable<O>,
+export function windowToggle<T, O>(this: Observable<T>, openings: Observable<O>,
                                    closingSelector: (openValue: O) => Observable<any>): Observable<Observable<T>> {
   return this.lift(new WindowToggleOperator<T, O>(openings, closingSelector));
-}
-
-export interface WindowToggleSignature<T> {
-  <O>(openings: Observable<O>, closingSelector: (openValue: O) => Observable<any>): Observable<Observable<T>>;
 }
 
 class WindowToggleOperator<T, O> implements Operator<T, Observable<T>> {
@@ -68,7 +64,7 @@ class WindowToggleOperator<T, O> implements Operator<T, Observable<T>> {
   }
 
   call(subscriber: Subscriber<Observable<T>>, source: any): any {
-    return source._subscribe(new WindowToggleSubscriber(
+    return source.subscribe(new WindowToggleSubscriber(
       subscriber, this.openings, this.closingSelector
     ));
   }
@@ -171,7 +167,7 @@ class WindowToggleSubscriber<T, O> extends OuterSubscriber<T, any> {
         this.contexts.push(context);
         const innerSubscription = subscribeToResult(this, closingNotifier, context);
 
-        if (innerSubscription.isUnsubscribed) {
+        if (innerSubscription.closed) {
           this.closeWindow(this.contexts.length - 1);
         } else {
           (<any> innerSubscription).context = context;

@@ -7,7 +7,7 @@ interface ValidationResult {
 export class MovieIDValidator{
 	static idNotTaken(control: FormControl): ValidationResult { 
 
-		let movies = require('./marvel-cinematic-universe.json').movies;
+		let movies = require('./../assets/marvel-cinematic-universe.json').movies;
 		let found:boolean = false;
 		
 		for (var i = 0; i < movies.length; ++i) {
@@ -25,7 +25,7 @@ export class MovieIDValidator{
 		let p = new Promise((resolve, reject) => {
 	     setTimeout(() => {
 
-	     	let movies = require('./marvel-cinematic-universe.json').movies;
+	     	let movies = require('./../assets/marvel-cinematic-universe.json').movies;
 			let found:boolean = false;
 			
 			for (var i = 0; i < movies.length; ++i) {

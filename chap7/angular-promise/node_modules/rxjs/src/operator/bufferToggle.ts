@@ -1,11 +1,11 @@
-import {Operator} from '../Operator';
-import {Subscriber} from '../Subscriber';
-import {Observable, SubscribableOrPromise} from '../Observable';
-import {Subscription} from '../Subscription';
+import { Operator } from '../Operator';
+import { Subscriber } from '../Subscriber';
+import { Observable, SubscribableOrPromise } from '../Observable';
+import { Subscription } from '../Subscription';
 
-import {subscribeToResult} from '../util/subscribeToResult';
-import {OuterSubscriber} from '../OuterSubscriber';
-import {InnerSubscriber} from '../InnerSubscriber';
+import { subscribeToResult } from '../util/subscribeToResult';
+import { OuterSubscriber } from '../OuterSubscriber';
+import { InnerSubscriber } from '../InnerSubscriber';
 
 /**
  * Buffers the source Observable values starting from an emission from
@@ -45,13 +45,9 @@ import {InnerSubscriber} from '../InnerSubscriber';
  * @method bufferToggle
  * @owner Observable
  */
-export function bufferToggle<T, O>(openings: SubscribableOrPromise<O>,
+export function bufferToggle<T, O>(this: Observable<T>, openings: SubscribableOrPromise<O>,
                                    closingSelector: (value: O) => SubscribableOrPromise<any>): Observable<T[]> {
   return this.lift(new BufferToggleOperator<T, O>(openings, closingSelector));
-}
-
-export interface BufferToggleSignature<T> {
-  <O>(openings: SubscribableOrPromise<O>, closingSelector: (value: O) => SubscribableOrPromise<any>): Observable<T[]>;
 }
 
 class BufferToggleOperator<T, O> implements Operator<T, T[]> {
@@ -61,7 +57,7 @@ class BufferToggleOperator<T, O> implements Operator<T, T[]> {
   }
 
   call(subscriber: Subscriber<T[]>, source: any): any {
-    return source._subscribe(new BufferToggleSubscriber(subscriber, this.openings, this.closingSelector));
+    return source.subscribe(new BufferToggleSubscriber(subscriber, this.openings, this.closingSelector));
   }
 }
 
@@ -162,7 +158,7 @@ class BufferToggleSubscriber<T, O> extends OuterSubscriber<T, O> {
 
     const innerSubscription = subscribeToResult(this, closingNotifier, <any>context);
 
-    if (!innerSubscription || innerSubscription.isUnsubscribed) {
+    if (!innerSubscription || innerSubscription.closed) {
       this.closeBuffer(context);
     } else {
       (<any> innerSubscription).context = context;

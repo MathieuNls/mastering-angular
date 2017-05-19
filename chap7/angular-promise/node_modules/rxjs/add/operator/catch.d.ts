@@ -1,6 +1,7 @@
-import { CatchSignature } from '../../operator/catch';
+import { _catch } from '../../operator/catch';
 declare module '../../Observable' {
     interface Observable<T> {
-        catch: CatchSignature<T>;
+        catch: typeof _catch;
+        _catch: typeof _catch;
     }
 }

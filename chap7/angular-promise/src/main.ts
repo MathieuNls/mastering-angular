@@ -1,15 +1,11 @@
-import { bootstrap } from '@angular/platform-browser-dynamic';
 import { enableProdMode } from '@angular/core';
-import { AngularObservableAppComponent, environment } from './app/';
-import { IMDBAPIService } from './app/services/imdbapi.service';
-import { HTTP_PROVIDERS }  from '@angular/http';
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
+import { AppModule } from './app/app.module';
+import { environment } from './environments/environment';
 
 if (environment.production) {
   enableProdMode();
 }
 
-bootstrap(AngularObservableAppComponent, 
-    [IMDBAPIService , HTTP_PROVIDERS]
-);
-
+platformBrowserDynamic().bootstrapModule(AppModule);

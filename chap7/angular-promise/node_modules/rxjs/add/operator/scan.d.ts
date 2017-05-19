@@ -1,6 +1,6 @@
-import { ScanSignature } from '../../operator/scan';
+import { scan } from '../../operator/scan';
 declare module '../../Observable' {
     interface Observable<T> {
-        scan: ScanSignature<T>;
+        scan: typeof scan;
     }
 }
