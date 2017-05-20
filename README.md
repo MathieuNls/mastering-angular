@@ -15,6 +15,19 @@ This repository contains the source code presented on the book. Here's are some 
 * [Angular2 Observer for JSON API](http://bit.ly/mastering-angular2-chap7-part2)
 * [Observer to Promises](http://bit.ly/mastering-angular2-chap7-part3)
 
+#### [Chapter 9: Advanced Forms in Angular](https://github.com/MathieuNls/mastering-angular/tree/master/chap9)
+
+#### [Chapter 10: Material Design in Angular](https://github.com/MathieuNls/mastering-angular/tree/master/chap10)
+
+#### [Chapter 15: Integrating Bootstrap with angular application](https://github.com/MathieuNls/mastering-angular/tree/master/chap15)
+
+#### Chapter 17: Design Patterns in Angular
+
+* [Model View Controller](https://github.com/MathieuNls/mastering-angular/tree/master/chap17/mvc)
+* [Singleton & Services](https://github.com/MathieuNls/mastering-angular/tree/master/chap17/singleton)
+* [Prototype & Reusable Pool](https://github.com/MathieuNls/mastering-angular/tree/master/chap17/prototype)
+* [Factory](https://github.com/MathieuNls/mastering-angular/tree/master/chap17/factory)
+* [Memento](https://github.com/MathieuNls/mastering-angular/tree/master/chap17/memento)
 
 ## Disclaimer
 
