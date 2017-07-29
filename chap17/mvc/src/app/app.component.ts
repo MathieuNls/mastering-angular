@@ -12,7 +12,7 @@ export class AppComponent {
 
   private model: UserModel;
 
-  public constructorUserComponent(api: APIService) {
+  public constructor(api: APIService) {
 
     this.model = new UserModel(api);
   }
