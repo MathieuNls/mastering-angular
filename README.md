@@ -10,6 +10,8 @@ Building web apps with Angular 2 and migrating the existing Angular 1.x applicat
 
 This repository contains the source code presented on the book. Here's are some short urls for direct access to chapters parts:
 
+#### [Chapter 1: Architectural Overview and Building a Simple App in Angular](https://github.com/MathieuNls/mastering-angular/tree/master/chap1)
+
 #### Chapter 7: Asynchronous Programming Using Observables
 * [Typescript Observer](http://bit.ly/mastering-angular2-chap7-part1)
 * [Angular2 Observer for JSON API](http://bit.ly/mastering-angular2-chap7-part2)
@@ -18,6 +20,8 @@ This repository contains the source code presented on the book. Here's are some 
 #### [Chapter 9: Advanced Forms in Angular](https://github.com/MathieuNls/mastering-angular/tree/master/chap9)
 
 #### [Chapter 10: Material Design in Angular](https://github.com/MathieuNls/mastering-angular/tree/master/chap10)
+
+#### [Chapter 12: Applying Dependency Injection](https://github.com/MathieuNls/mastering-angular/tree/master/chap12)
 
 #### [Chapter 15: Integrating Bootstrap with angular application](https://github.com/MathieuNls/mastering-angular/tree/master/chap15)
 
